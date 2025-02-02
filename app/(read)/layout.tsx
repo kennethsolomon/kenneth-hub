@@ -15,10 +15,14 @@ export default function Layout({
       enableSystem
       disableTransitionOnChange
     >
-      <main className="container mx-auto p-4 max-w-[625px]">
+      <main className="container mx-auto p-4 max-w-[430px] sm:max-w-[625px]">
         <header className="flex justify-between items-center mb-4">
-          <h1 className="text-3xl font-semibold">Kenneth's Hub | Manga Reader</h1>
-          <Link href="/read"><Book/></Link>
+          <h1 className="text-3xl font-semibold">
+            Kenneth's Hub | Manga Reader
+          </h1>
+          <Link href="/read">
+            <Book />
+          </Link>
         </header>
 
         <QueryProvider>{children}</QueryProvider>

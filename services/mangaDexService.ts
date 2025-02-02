@@ -20,12 +20,29 @@ export const getMangaDetails = async (id: string) => {
 	return response.data;
 };
 
-export const getChapters = async (id: string, limit: string, offset: string) => {
-	const url = `/chapter?manga=${id}&limit=${limit}&offset=${offset}&translatedLanguage[]=en`;
+export const getChapters = async (id: string, limit: string, offset: string, lastChapter?: string) => {
+	const url = `/chapter?manga=${id}&limit=${lastChapter ? lastChapter : limit}&offset=${offset}&translatedLanguage[]=en`;
 
 	const response = await api.get(url);
 	return response.data;
 };
+
+export const getAllChapters = async (id: string, total: number) => {
+    let allChapters: any[] = [];
+    let offset = 0;
+    const limit = 100; // Adjust based on API constraints
+    
+    do {
+        const url = `/chapter?manga=${id}&limit=${limit}&offset=${offset}&translatedLanguage[]=en`;
+        const response = await api.get(url);
+        
+        allChapters = [...allChapters, ...response.data.data];
+        offset += limit;
+    } while (offset < Number(total));
+    
+    return allChapters;
+};
+
 
 export const getChapterDetails = async (id: string) => {
 	const url = `/at-home/server/${id}`
@@ -38,6 +55,23 @@ export const getChapterDetails = async (id: string) => {
 		chapters.push(`${baseURL}/data/${hash}/${chapter}?langCode=en`);
 	});
 
-	console.log("Chapter Details: ", response.data);
 	return chapters;
 };
+
+export const getChapter = async (mangaId: string, chapterId: string) => {
+	const url = `/at-home/server/${chapterId}`
+	const response = await api.get(url);
+	const baseURL = response.data.baseUrl;
+	const hash = response.data.chapter.hash;
+	const chapters: string[] = []; // Explicitly define the type
+
+	response.data.chapter.data.forEach((chapter: string) => {
+		chapters.push(`${baseURL}/data/${hash}/${chapter}?langCode=en`);
+	});
+
+	return chapters;
+}
+
+
+export const formatTitleForUrl = (title: string) =>
+	title.toLowerCase().replace(/\s+/g, "-"); // Convert spaces to hyphens
