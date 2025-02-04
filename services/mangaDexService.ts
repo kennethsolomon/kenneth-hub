@@ -27,20 +27,36 @@ export const getChapters = async (id: string, limit: string, offset: string, las
 	return response.data;
 };
 
-export const getAllChapters = async (id: string, total: number) => {
+export const getAllChapters = async (id: string) => {
     let allChapters: any[] = [];
     let offset = 0;
     const limit = 100; // Adjust based on API constraints
-    
+
+		let loop = true;
     do {
         const url = `/chapter?manga=${id}&limit=${limit}&offset=${offset}&translatedLanguage[]=en`;
         const response = await api.get(url);
-        
+
         allChapters = [...allChapters, ...response.data.data];
         offset += limit;
-    } while (offset < Number(total));
-    
-    return allChapters;
+
+				if(!response.data.data.length) {
+					loop = false
+				}
+    } while (loop);
+
+		const sortedChapters = allChapters.sort((a, b) => {
+				return parseFloat(b.attributes.chapter) - parseFloat(a.attributes.chapter);
+		});
+
+		const uniqueChapters = Object.values(
+			sortedChapters.reduce((acc, chapter) => {
+					const key = `${chapter.attributes.volume}-${chapter.attributes.chapter}`;
+					acc[key] = chapter; // Keep the last occurrence
+					return acc;
+			}, {})
+	);
+    return uniqueChapters;
 };
 
 
@@ -58,7 +74,7 @@ export const getChapterDetails = async (id: string) => {
 	return chapters;
 };
 
-export const getChapter = async (mangaId: string, chapterId: string) => {
+export const getChapter = async (chapterId: string) => {
 	const url = `/at-home/server/${chapterId}`
 	const response = await api.get(url);
 	const baseURL = response.data.baseUrl;

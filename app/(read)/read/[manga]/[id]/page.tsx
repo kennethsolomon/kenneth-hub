@@ -19,7 +19,7 @@ import { useParams } from "next/navigation";
 import React, { use, useEffect, useState } from "react";
 
 const MangaDetails = () => {
-  const { title, id } = useParams();
+  const { manga, id } = useParams();
 
   const [coverUrl, setCoverUrl] = useState<string | undefined>();
   const [chapters, setChapters] = useState<any[] | undefined>();
@@ -28,7 +28,7 @@ const MangaDetails = () => {
   const handleSearch = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     const filteredChapters = mangaChapters?.filter((chapter) =>
-      chapter.attributes.chapter.includes(search)
+      chapter?.attributes?.chapter.includes(search)
     );
     setChapters(filteredChapters);
   };
@@ -40,29 +40,28 @@ const MangaDetails = () => {
     if (selectedManga) {
       setCoverUrl(getCover(selectedManga));
     }
-  }, []);
+   }, []);
 
   const {
     data: mangaDetails,
     isLoading: isMangaDetailsLoading,
     isError: isMangaDetailsError,
   } = useMangaDetails(String(id));
+
   const attributes = mangaDetails?.data?.attributes;
 
   const {
     data: mangaChapters,
     isLoading: isMangaChaptersLoading,
     isError: isMangaChaptersError,
-  } = useMangaAllChapters(String(id), 349);
+  } = useMangaAllChapters(String(id));
 
   useEffect(() => {
     if (mangaChapters) {
       setChapters(mangaChapters);
+      localStorage.setItem("mangaChapters", JSON.stringify(mangaChapters));
     }
   }, [mangaChapters]);
-
-  console.log(mangaDetails, "mangaDetails");
-  // console.log(mangaChapters, "mangaChapters");
 
   return (
     <>
@@ -99,16 +98,12 @@ const MangaDetails = () => {
                 <Link
                   href={
                     "/read/" +
-                    formatTitleForUrl(String(title)) +
+                    formatTitleForUrl(String(manga)) +
                     "/" +
                     id + // Manga ID
                     "/" +
                     chapter.id +
-                    "?page=" +
-                    (Number(chapter.attributes.chapter) % 10) +
-                    "&offset=" +
-                    Math.floor(Number(chapter.attributes.chapter) / 10) * 10 +
-                    "&limit=10"
+                    "/" + chapter.attributes.chapter
                   }
                   key={chapter.id}
                 >

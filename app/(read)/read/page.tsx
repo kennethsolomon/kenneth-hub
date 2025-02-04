@@ -38,8 +38,6 @@ const MangaList = () => {
     }
   });
 
-  console.log();
-
   return (
     <>
       {isLoading && <p>Loading...</p>}

@@ -30,16 +30,19 @@ export const useMangaChapters = (id: string, limit: string, offset: string, last
   return useQuery({ queryKey: ['mangaChapters', id], queryFn: () => getChapters(id, limit, offset, lastChapter) });
 };
 
-export const useMangaChapter = (mangaId: string, chapterId: string) => {
-  return useQuery({ queryKey: ['mangaChapter', chapterId], queryFn: () => getChapter(mangaId, chapterId) });
+export const useMangaChapter = (chapterId: string, chapters) => {
+    const filteredArray = chapters?.filter((c) => {
+      return c.id === chapterId;
+    });
+    return useQuery({ queryKey: ['mangaChapter', chapterId], queryFn: () => getChapter(filteredArray[0].id)});
 };
 
 export const useMangaChapterDetails = (id: string) => {
   return useQuery({ queryKey: ['mangaChapterDetails', id], queryFn: () => getChapterDetails(id) });
 };
 
-export const useMangaAllChapters = (id: string, totalChapters: number) => {
-  return useQuery({ queryKey: ['mangaAllChapters', id], queryFn: () => getAllChapters(id, totalChapters)});
+export const useMangaAllChapters = (id: string) => {
+  return useQuery({ queryKey: ['mangaAllChapters'], queryFn: () => getAllChapters(id)});
 };
 
 
