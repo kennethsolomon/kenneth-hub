@@ -78,7 +78,7 @@ function MangaDetails() {
       )}
       {mangaChapter &&
         mangaChapter.map((element, index) => (
-          <img key={index} src={element} alt="cover" />
+          <img className="justify-self-center" key={index} src={element} alt="cover" />
         ))}
       {!isMangaChapterLoading && (
         <div className="flex justify-between mb-2">

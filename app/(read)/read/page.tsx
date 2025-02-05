@@ -42,7 +42,7 @@ const MangaList = () => {
     <>
       {isLoading && <p>Loading...</p>}
       {isError && <p>Error</p>}
-      <div className="flex mb-2 gap-2">
+      <div className="flex mb-2 gap-2 sticky top-2">
         <Input
           onChange={(e) => setSearch(e.target.value)}
           value={search}
@@ -53,7 +53,7 @@ const MangaList = () => {
           Search
         </Button>
       </div>
-      <div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
         {mangaList &&
           mangaList.map((manga: any) => {
             const coverUrl = getCover(manga);
@@ -66,10 +66,11 @@ const MangaList = () => {
                   href={"/read/" + formatTitleForUrl(title) + "/" + manga?.id}
                   onClick={() => handleSelectedManga(manga)}
                 >
-                  <Card className="bg-gray-800 flex flex-col items-center mb-3">
+                  <Card className="bg-gray-800">
+                  {/* <Card className="bg-gray-800 flex flex-col items-center mb-3"> */}
                     <CardHeader>
                       <CardTitle> {title} </CardTitle>
-                      <CardDescription> {description} </CardDescription>
+                      <CardDescription className="line-clamp-6"> {description} </CardDescription>
                     </CardHeader>
                     <CardContent>
                       {coverUrl && <img src={coverUrl} alt="cover" />}{" "}
