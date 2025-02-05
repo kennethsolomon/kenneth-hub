@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useMangaList } from "@/hooks/useMangaDex";
-import { formatTitleForUrl, getCover } from "@/services/mangaDexService";
+import { getCover } from "@/services/mangaDexService";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -63,7 +62,7 @@ const MangaList = () => {
             return (
               <div key={manga.id}>
                 <Link
-                  href={"/read/" + formatTitleForUrl(title) + "/" + manga?.id}
+                  href={"/read/" + encodeURIComponent(title).replace(/%20/g, " ") + "/" + manga?.id}
                   onClick={() => handleSelectedManga(manga)}
                 >
                   <Card className="bg-gray-800">

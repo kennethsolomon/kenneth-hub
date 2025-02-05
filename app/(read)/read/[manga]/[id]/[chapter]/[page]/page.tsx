@@ -1,28 +1,25 @@
 "use client";
 
-import { useParams, useSearchParams, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   useMangaChapter,
-  useMangaChapterDetails,
-  useMangaChapters,
-  useMangaDetails,
 } from "@/hooks/useMangaDex";
-import { cache, use, useEffect, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ArrowBigLeft, ArrowBigRight, Undo2 } from "lucide-react";
 import Link from "next/link";
-import { formatTitleForUrl } from "@/services/mangaDexService";
+
+import { Chapter } from "@/types/manga"
 
 function MangaDetails() {
   const router = useRouter();
   const { manga, id, chapter, page } = useParams();
   const [search, setSearch] = useState("");
-  const getChapter = JSON.parse(localStorage.getItem('mangaChapters'));
+  const getChapter = JSON.parse(String(localStorage.getItem('mangaChapters')));
 
   const handleNextPage = () => {
-    const filteredChapter = getChapter.filter((c) => {
+    const filteredChapter = getChapter.filter((c: Chapter) => {
       return Number(c.attributes.chapter) === (Number(page) + 1)
     })
 
@@ -30,7 +27,7 @@ function MangaDetails() {
   };
 
   const handlePreviousPage = () => {
-    const filteredChapter = getChapter.filter((c) => {
+    const filteredChapter = getChapter.filter((c: Chapter) => {
       return Number(c.attributes.chapter) === (Number(page) - 1)
     })
 
@@ -38,7 +35,7 @@ function MangaDetails() {
   };
 
   const handleSearch = () => {
-    const filteredChapter = getChapter.filter((c) => {
+    const filteredChapter = getChapter.filter((c: Chapter) => {
       return Number(c.attributes.chapter) === (Number(search))
     })
 
@@ -48,11 +45,12 @@ function MangaDetails() {
   const {
     data: mangaChapter,
     isLoading: isMangaChapterLoading,
-  } = useMangaChapter(String(chapter), JSON.parse(localStorage.getItem('mangaChapters')));
+  } = useMangaChapter(String(chapter), JSON.parse(String(localStorage.getItem('mangaChapters'))));
 
   return (
     <>
-      <Link href={"/read/" + formatTitleForUrl(String(manga)) + "/" + id}>
+      {isMangaChapterLoading && <p>Loading...</p>}
+      <Link href={"/read/" + encodeURIComponent(String(manga)).replace(/%20/g, " ") + "/" + id}>
         <Undo2 className="mb-3" />
       </Link>
       <div className="w-full flex mb-2 gap-2">

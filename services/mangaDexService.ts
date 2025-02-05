@@ -45,18 +45,25 @@ export const getAllChapters = async (id: string) => {
 				}
     } while (loop);
 
+
 		const sortedChapters = allChapters.sort((a, b) => {
 				return parseFloat(b.attributes.chapter) - parseFloat(a.attributes.chapter);
 		});
 
+
 		const uniqueChapters = Object.values(
 			sortedChapters.reduce((acc, chapter) => {
 					const key = `${chapter.attributes.volume}-${chapter.attributes.chapter}`;
-					acc[key] = chapter; // Keep the last occurrence
+					if (!acc[key]) {
+            acc[key] = chapter; // Keep the first occurrence
+					}
 					return acc;
 			}, {})
 	);
-    return uniqueChapters;
+
+
+	return uniqueChapters;
+
 };
 
 
@@ -77,6 +84,7 @@ export const getChapterDetails = async (id: string) => {
 export const getChapter = async (chapterId: string) => {
 	const url = `/at-home/server/${chapterId}`
 	const response = await api.get(url);
+	console.log(response, 'getChapter')
 	const baseURL = response.data.baseUrl;
 	const hash = response.data.chapter.hash;
 	const chapters: string[] = []; // Explicitly define the type

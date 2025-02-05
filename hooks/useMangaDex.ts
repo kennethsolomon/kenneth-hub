@@ -1,5 +1,7 @@
 "use client"
 
+import { Chapter } from '@/types/manga'
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getMangaList, getMangaDetails, getChapters, getChapterDetails, getAllChapters, getChapter } from '@/services/mangaDexService';
 
@@ -30,11 +32,15 @@ export const useMangaChapters = (id: string, limit: string, offset: string, last
   return useQuery({ queryKey: ['mangaChapters', id], queryFn: () => getChapters(id, limit, offset, lastChapter) });
 };
 
-export const useMangaChapter = (chapterId: string, chapters) => {
-    const filteredArray = chapters?.filter((c) => {
+export const useMangaChapter = (chapterId: string, chapters: Chapter[] | undefined) => {
+    const filteredArray = chapters?.filter((c: Chapter) => {
       return c.id === chapterId;
     });
-    return useQuery({ queryKey: ['mangaChapter', chapterId], queryFn: () => getChapter(filteredArray[0].id)});
+    return useQuery({
+      queryKey: ['mangaChapter', chapterId],
+      queryFn: () => getChapter(filteredArray?.[0]?.id ?? ""),
+      enabled: !!filteredArray?.[0], // Prevents unnecessary queries
+    });
 };
 
 export const useMangaChapterDetails = (id: string) => {
