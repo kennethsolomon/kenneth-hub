@@ -26,7 +26,6 @@ const MangaDetails = () => {
   const [coverUrl, setCoverUrl] = useState<string | undefined>();
   const [chapters, setChapters] = useState<any[] | undefined>();
   const [search, setSearch] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
 
   const {
     data: mangaChapters,
@@ -47,15 +46,12 @@ const MangaDetails = () => {
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      const storedManga = localStorage.getItem("selectedManga");
-      const selectedManga = storedManga ? JSON.parse(storedManga) : null;
+    const storedManga = localStorage.getItem("selectedManga");
+    const selectedManga = storedManga ? JSON.parse(storedManga) : null;
 
-      if (selectedManga) {
-        setCoverUrl(getCover(selectedManga));
-      }
-    }, 1000);
-    setIsLoading(false);
+    if (selectedManga) {
+      setCoverUrl(getCover(selectedManga));
+    }
   }, []);
 
   const {
@@ -73,13 +69,12 @@ const MangaDetails = () => {
         localStorage.setItem("mangaChapters", JSON.stringify(mangaChapters));
       }
     }, 1000);
-    setIsLoading(false);
   }, [mangaChapters]);
 
   return (
     <>
-      {isLoading && <p>Loading...</p>}
-      {!isLoading && (
+      {!coverUrl && <p>Loading...</p>}
+      {coverUrl && (
         <Card className="bg-gray-800 flex flex-col justify-self-center items-center sm:max-w-[768px]">
           <CardHeader>
             <CardTitle> {attributes?.title.en} </CardTitle>
@@ -108,30 +103,27 @@ const MangaDetails = () => {
               Chapters
             </h2>
             <div className="flex flex-col">
-              <div className="flex flex-col">
-                {chapters?.map((chapter) => (
-                  <Link
-                    href={
-                      "/read/" +
-                      encodeURIComponent(String(manga)).replace(/%20/g, " ") +
-                      "/" +
-                      id + // Manga ID
-                      "/" +
-                      chapter.id +
-                      "/" +
-                      chapter.attributes.chapter
-                    }
-                    key={chapter.id}
-                  >
-                    <div className="flex flex-col bg-slate-700 mb-2 p-2 rounded-lg">
-                      <p className="text-white">
-                        {chapter.attributes.chapter} -{" "}
-                        {chapter.attributes.title}
-                      </p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+              {chapters?.map((chapter) => (
+                <Link
+                  href={
+                    "/read/" +
+                    encodeURIComponent(String(manga)).replace(/%20/g, " ") +
+                    "/" +
+                    id + // Manga ID
+                    "/" +
+                    chapter.id +
+                    "/" +
+                    chapter.attributes.chapter
+                  }
+                  key={chapter.id}
+                >
+                  <div className="flex flex-col bg-slate-700 mb-2 p-2 rounded-lg">
+                    <p className="text-white">
+                      {chapter.attributes.chapter} - {chapter.attributes.title}
+                    </p>
+                  </div>
+                </Link>
+              ))}
             </div>
           </CardContent>
         </Card>
