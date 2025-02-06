@@ -1,6 +1,7 @@
 import createApiClient from '@/lib/axiosInstance';
 
-const api = createApiClient('mangaDex', 'https://api.mangadex.org');
+// const api = createApiClient('mangaDex', 'https://api.mangadex.org');
+const api = createApiClient('mangaDex', '/mangadex/');
 
 export const getMangaList = async (title?: String) => {
   const response = await api.get(`/manga?limit=20&includes[]=cover_art&title=${title}`);

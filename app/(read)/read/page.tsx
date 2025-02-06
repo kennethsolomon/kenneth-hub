@@ -13,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import MangaCover from "@/components/MangaCover";
 
 const MangaList = () => {
   const queryClient = useQueryClient();
@@ -72,7 +73,7 @@ const MangaList = () => {
                       <CardDescription className="line-clamp-6"> {description} </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      {coverUrl && <img src={coverUrl} alt="cover" />}{" "}
+                      {coverUrl && <MangaCover src={coverUrl} />}
                     </CardContent>
                   </Card>
                 </Link>

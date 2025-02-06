@@ -19,6 +19,7 @@ import { useParams } from "next/navigation";
 import React, { use, useEffect, useState } from "react";
 
 import { Chapter } from "@/types/manga";
+import MangaCover from "@/components/MangaCover";
 
 const MangaDetails = () => {
   const { manga, id } = useParams();
@@ -81,7 +82,7 @@ const MangaDetails = () => {
             <CardDescription> {attributes?.description.en} </CardDescription>
           </CardHeader>
           <CardContent>
-            {coverUrl && <img src={coverUrl} alt="cover" />}
+            {coverUrl && <MangaCover src={coverUrl} />}
             <div className="text-white font-bold mt-3">
               <p>Latest Chapter: {attributes?.lastChapter}</p>
               <p>Status: {attributes?.status}</p>

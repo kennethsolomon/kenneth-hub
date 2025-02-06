@@ -11,6 +11,7 @@ import { ArrowBigLeft, ArrowBigRight, Undo2 } from "lucide-react";
 import Link from "next/link";
 
 import { Chapter } from "@/types/manga"
+import MangaChapter from "@/components/MangaChapter";
 
 function MangaDetails() {
   const router = useRouter();
@@ -76,7 +77,7 @@ function MangaDetails() {
       )}
       {mangaChapter &&
         mangaChapter.map((element, index) => (
-          <img className="justify-self-center" key={index} src={element} alt="cover" />
+          <MangaChapter className="justify-self-center" key={index} src={element} />
         ))}
       {!isMangaChapterLoading && (
         <div className="flex justify-between mb-2">
