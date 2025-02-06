@@ -13,11 +13,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'uploads.mangadex.org',
+        hostname: 'uploads.mangadex.org', // For MangaDex Cover
       },
       {
         protocol: 'https',
-        hostname: 'cmdxd98sb0x3yprd.mangadex.network',
+        hostname: '*.mangadex.network', // For MangaDex Chapters
       },
     ],
   },
