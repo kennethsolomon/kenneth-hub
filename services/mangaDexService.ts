@@ -66,7 +66,6 @@ export const getAllChapters = async (id: string) => {
 
 };
 
-
 export const getChapterDetails = async (id: string) => {
 	const url = `/at-home/server/${id}`
 	const response = await api.get(url);

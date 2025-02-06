@@ -1,5 +1,4 @@
 "use client"; // Ensure this is a Client Component
-
 import QueryProvider from "@/components/QueryProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Book } from "lucide-react";

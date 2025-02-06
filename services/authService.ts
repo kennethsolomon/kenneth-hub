@@ -10,6 +10,4 @@ export const getToken = async (source: string) => {
 			default:
 			break;
 	}
-
-
 };
