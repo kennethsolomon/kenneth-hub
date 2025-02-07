@@ -1,26 +1,26 @@
-// import { createClient } from "@/lib/supabase/supabaseClient";
-// import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/supabaseClient";
+import { useEffect, useState } from "react";
 
-// const supabase = await createClient()
+const supabase = await createClient()
 
-// export const useAuth = () => {
-//   const [user, setUser] = useState<any>(null);
+export const useAuth = () => {
+  const [user, setUser] = useState<any>(null);
 
-//   useEffect(() => {
-//     const getUser = async () => {
-//       const { data: { session } } = await supabase.auth.getSession();
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
 
-//       setUser(session?.user || null);
-//     };
+      setUser(session?.user || null);
+    };
 
-//     getUser();
+    getUser();
 
-//     const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-//       setUser(session?.user || null);
-//     });
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user || null);
+    });
 
-//     return () => authListener?.subscription.unsubscribe();
-//   }, []);
+    return () => authListener?.subscription.unsubscribe();
+  }, []);
 
-//   return { user };
-// };
+  return { user };
+};

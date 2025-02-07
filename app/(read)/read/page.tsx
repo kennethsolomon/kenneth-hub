@@ -63,14 +63,22 @@ const MangaList = () => {
             return (
               <div key={manga.id}>
                 <Link
-                  href={"/read/" + encodeURIComponent(title).replace(/%20/g, " ") + "/" + manga?.id}
+                  href={
+                    "/read/" +
+                    encodeURIComponent(title).replace(/%20/g, " ") +
+                    "/" +
+                    manga?.id
+                  }
                   onClick={() => handleSelectedManga(manga)}
                 >
                   <Card className="bg-gray-800">
-                  {/* <Card className="bg-gray-800 flex flex-col items-center mb-3"> */}
+                    {/* <Card className="bg-gray-800 flex flex-col items-center mb-3"> */}
                     <CardHeader>
                       <CardTitle> {title} </CardTitle>
-                      <CardDescription className="line-clamp-6"> {description} </CardDescription>
+                      <CardDescription className="line-clamp-6">
+                        {" "}
+                        {description}{" "}
+                      </CardDescription>
                     </CardHeader>
                     <CardContent>
                       {coverUrl && <MangaCover src={coverUrl} />}

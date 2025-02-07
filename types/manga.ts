@@ -19,3 +19,11 @@ export type Chapter = {
     type: string;
   }[];
 };
+
+export type Bookmark = {
+  user_id: string;
+  manga_id: string;
+  cover_url: string;
+  title: string;
+  description: string;
+}

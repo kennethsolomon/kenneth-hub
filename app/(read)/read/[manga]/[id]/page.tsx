@@ -9,7 +9,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
+  useAddBookmark,
+  useDeleteBookmark,
   useMangaAllChapters,
+  useMangaBookmark,
   useMangaChapters,
   useMangaDetails,
 } from "@/hooks/useMangaDex";
@@ -20,9 +23,21 @@ import React, { use, useEffect, useState } from "react";
 
 import { Chapter } from "@/types/manga";
 import MangaCover from "@/components/MangaCover";
+import { useAuth } from "@/hooks/useAuth";
+import { BookmarkCheck, BookmarkIcon, Loader } from "lucide-react";
 
 const MangaDetails = () => {
+  const { user } = useAuth();
   const { manga, id } = useParams();
+
+  const userId = user?.id ?? null; // Ensures it's not undefined
+  const mangaId = id ? String(id) : null; // Ensures it's not undefined
+
+  const {
+    data: bookmark,
+    isLoading: bookmarkLoading,
+    isError,
+  } = useMangaBookmark(userId && mangaId ? userId : null, String(mangaId));
 
   const [coverUrl, setCoverUrl] = useState<string | undefined>();
   const [chapters, setChapters] = useState<any[] | undefined>();
@@ -72,14 +87,63 @@ const MangaDetails = () => {
     }, 1000);
   }, [mangaChapters]);
 
+  const addBookmark = useAddBookmark({
+    user_id: user?.id,
+    manga_id: String(id),
+    cover_url: String(coverUrl),
+    title: attributes?.title.en,
+    description: attributes?.description.en,
+  });
+
+  const deleteBookmark = useDeleteBookmark({
+    user_id: user?.id,
+    manga_id: String(id),
+    cover_url: String(coverUrl),
+    title: attributes?.title.en,
+    description: attributes?.description.en,
+  });
+
+  const handleAddBookmark = () => {
+    if (!addBookmark) return; // Prevent calling mutate() if addBookmark is null
+    addBookmark.mutate();
+  };
+
+  const handleDeleteBookmark = () => {
+    if (!deleteBookmark) return; // Prevent calling mutate() if addBookmark is null
+    deleteBookmark.mutate();
+  };
+
+  console.log(bookmark, bookmarkLoading, bookmark?.length);
   return (
     <>
       {!coverUrl && <p>Loading...</p>}
       {coverUrl && (
         <Card className="bg-gray-800 flex flex-col justify-self-center items-center sm:max-w-[768px]">
           <CardHeader>
-            <CardTitle> {attributes?.title.en} </CardTitle>
-            <CardDescription> {attributes?.description.en} </CardDescription>
+            <div className="flex flex-col">
+              <div className="flex justify-between">
+                <CardTitle> {attributes?.title.en} </CardTitle>
+                {!bookmarkLoading ? (
+                  bookmark?.length ? (
+                    <BookmarkCheck
+                      className="cursor-pointer"
+                      onClick={handleDeleteBookmark}
+                    />
+                  ) : (
+                    <BookmarkIcon
+                      className="cursor-pointer"
+                      onClick={handleAddBookmark}
+                    />
+                  )
+                ) : (
+                  <Loader className="animate-spin" />
+                )}
+              </div>
+              <CardDescription className="mt-5">
+                {" "}
+                {attributes?.description.en}{" "}
+              </CardDescription>
+            </div>
           </CardHeader>
           <CardContent>
             {coverUrl && <MangaCover src={coverUrl} />}
