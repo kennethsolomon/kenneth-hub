@@ -1,6 +1,6 @@
 import createApiClient from "@/lib/axiosInstance";
 import { createClient } from "@/lib/supabase/supabaseClient";
-import { Bookmark } from "@/types/manga";
+import { Bookmark, ReadChapter } from "@/types/manga";
 
 // const api = createApiClient('mangaDex', 'https://api.mangadex.org');
 const api = createApiClient("mangaDex", "/mangadex/");
@@ -155,6 +155,47 @@ export const getBookmarks = async (userId: string) => {
   if (error) throw new Error("Server Error.");
 
   return bookmarks;
+};
+
+// Read Chapter
+export const insertReadChapter = async (readChapter: ReadChapter) => {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("read_chapters")
+      .upsert(
+        [
+          {
+            user_id: readChapter.user_id,
+            manga_id: readChapter.manga_id,
+            chapter_id: readChapter.chapter_id,
+          },
+        ],
+        { onConflict: "user_id, manga_id" } // Ensures uniqueness on these fields
+      )
+      .select(); // Returns updated/inserted data
+
+    if (error) throw error;
+
+    console.log("Updated or inserted read chapter:", data);
+  } catch (error) {
+    console.error("Error inserting read chapter:", error);
+  }
+};
+
+export const getReadChapter = async (readChapter: ReadChapter) => {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("read_chapters")
+    .select("*")
+    .eq("user_id", readChapter.user_id)
+    .eq("manga_id", readChapter.manga_id)
+    .single(); // Expecting a single record
+
+  if (error) throw new Error("Server Error: " + error.message);
+
+  return data;
 };
 
 // Utils

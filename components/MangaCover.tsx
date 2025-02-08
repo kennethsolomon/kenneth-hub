@@ -8,6 +8,7 @@ interface MangaCoverProps {
 const MangaCover: React.FC<MangaCoverProps> = ({ src }) => {
   return (
     <Image
+      className="justify-self-center"
       src={src} // No need to use String(src), it's already a string
       alt="Manga Cover"
       width={400}

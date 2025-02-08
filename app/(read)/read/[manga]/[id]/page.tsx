@@ -1,4 +1,5 @@
 "use client";
+import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,11 +15,13 @@ import {
   useMangaAllChapters,
   useMangaBookmark,
   useMangaDetails,
+  useAddReadChapter,
+  useMangaReadChapter,
 } from "@/hooks/useMangaDex";
 import { getCover } from "@/services/mangaDexService";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { MouseEventHandler, useEffect, useState } from "react";
 
 import { Chapter } from "@/types/manga";
 import MangaCover from "@/components/MangaCover";
@@ -60,6 +63,15 @@ const MangaDetails = () => {
     isLoading: isMangaDetailsLoading,
     isError: isMangaDetailsError,
   } = useMangaDetails(String(currentParams.id));
+
+  const {
+    data: mangaReadChapter,
+    isLoading: isMangaReadChapterLoading,
+    isError: isMangaReadChapterError,
+  } = useMangaReadChapter({
+    user_id: userId,
+    manga_id: String(mangaId),
+  });
 
   // useEffects
   useEffect(() => {
@@ -122,18 +134,33 @@ const MangaDetails = () => {
 
     if (!mangaChapters) return;
 
-    const filteredChapters = mangaChapters?.filter((chapter) =>
-      chapter?.attributes.chapter.includes(search)
+    const filteredChapters = mangaChapters?.filter(
+      (chapter) => chapter?.attributes.chapter === search
+      // chapter?.attributes.chapter.includes(search)
     );
 
     setChapters(filteredChapters.length ? filteredChapters : []);
+  };
+
+  const addReadChapter = useAddReadChapter();
+  const handleReadChapter = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    chapterId: string
+  ) => {
+    addReadChapter.mutate({
+      user_id: user.id,
+      manga_id: String(currentParams.id),
+      chapter_id: chapterId,
+    });
   };
 
   if (
     !!!chapters?.length ||
     bookmarkLoading ||
     isMangaChaptersLoading ||
-    isMangaDetailsLoading
+    isMangaDetailsLoading ||
+    isMangaReadChapterLoading ||
+    addReadChapter.isPending
   ) {
     return <p>Loading ...</p>;
   }
@@ -207,10 +234,23 @@ const MangaDetails = () => {
                     chapter.attributes.chapter
                   }
                   key={chapter.id}
+                  onClick={(e) => handleReadChapter(e, chapter.id)}
                 >
-                  <div className="flex flex-col bg-slate-700 mb-2 p-2 rounded-lg">
-                    <p className="text-white">
-                      {chapter.attributes.chapter} - {chapter.attributes.title}
+                  <div
+                    className={`flex justify-between mb-2 p-2 rounded-lg ${
+                      chapter.id == mangaReadChapter?.chapter_id
+                        ? "bg-slate-900"
+                        : "bg-slate-700"
+                    }`}
+                  >
+                    <p className="text-white line-clamp-1 text-sm">
+                      [{chapter.attributes.chapter}] {chapter.attributes.title}
+                    </p>
+                    <p className="font-mono text-xs text-slate-400 self-center">
+                      {format(
+                        new Date(chapter.attributes.readableAt),
+                        "MMM dd, yyyy"
+                      )}
                     </p>
                   </div>
                 </Link>

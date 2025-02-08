@@ -41,7 +41,7 @@ const MangaList = () => {
           Search
         </Button>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         {mangaList &&
           mangaList.map((manga: any) => {
             const coverUrl = getCover(manga);

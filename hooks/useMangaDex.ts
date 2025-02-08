@@ -1,6 +1,6 @@
 "use client";
 
-import { Bookmark, Chapter } from "@/types/manga";
+import { Bookmark, Chapter, ReadChapter } from "@/types/manga";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -14,6 +14,8 @@ import {
   getBookmarks,
   getBookmark,
   deleteBookmark,
+  insertReadChapter,
+  getReadChapter,
 } from "@/services/mangaDexService";
 import toast from "react-hot-toast";
 
@@ -123,5 +125,31 @@ export const useDeleteBookmark = () => {
       queryClient.invalidateQueries({ queryKey: ["mangaDexBookmark"] });
       toast.success(`${manga.title} has been removed from your bookmarks! 🪹`);
     },
+  });
+};
+
+// Read Chapters
+export const useAddReadChapter = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (readChapter: ReadChapter) => insertReadChapter(readChapter), // ✅ Accepts data dynamically
+    onSuccess: (_, readChapter) => {
+      queryClient.invalidateQueries({
+        queryKey: ["mangaDexReadChapter", readChapter.chapter_id],
+      });
+    },
+  });
+};
+
+export const useMangaReadChapter = (readChapter: ReadChapter) => {
+  return useQuery({
+    queryKey: [
+      "mangaDexReadChapter",
+      readChapter.user_id,
+      readChapter.manga_id,
+    ], // Ensure query key updates correctly
+    queryFn: () => getReadChapter(readChapter),
+    enabled: !!readChapter.user_id && !!readChapter.manga_id, // Prevents running query with empty values
   });
 };

@@ -26,4 +26,10 @@ export type Bookmark = {
   cover_url: string;
   title: string;
   description: string;
-}
+};
+
+export type ReadChapter = {
+  user_id: string;
+  manga_id: string;
+  chapter_id?: string;
+};
