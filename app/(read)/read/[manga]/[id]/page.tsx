@@ -13,107 +13,131 @@ import {
   useDeleteBookmark,
   useMangaAllChapters,
   useMangaBookmark,
-  useMangaChapters,
   useMangaDetails,
 } from "@/hooks/useMangaDex";
 import { getCover } from "@/services/mangaDexService";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Chapter } from "@/types/manga";
 import MangaCover from "@/components/MangaCover";
 import { useAuth } from "@/hooks/useAuth";
 import { BookmarkCheck, BookmarkIcon, Loader } from "lucide-react";
+import { QueryObserverResult, useQueryClient } from "@tanstack/react-query";
 
 const MangaDetails = () => {
   const { user } = useAuth();
-  const { manga, id } = useParams();
-
-  const userId = user?.id ?? null; // Ensures it's not undefined
-  const mangaId = id ? String(id) : null; // Ensures it's not undefined
-
-  const {
-    data: bookmark,
-    isLoading: bookmarkLoading,
-    isError,
-  } = useMangaBookmark(userId && mangaId ? userId : null, String(mangaId));
-
+  const params = useParams(); // Get current route params
+  const [currentParams, setCurrentParams] = useState(params);
   const [coverUrl, setCoverUrl] = useState<string | undefined>();
   const [chapters, setChapters] = useState<any[] | undefined>();
   const [search, setSearch] = useState("");
+
+  const userId = user?.id ?? null; // Ensures it's not undefined
+  const mangaId = currentParams.id ? String(currentParams.id) : null; // Ensures it's not undefined
+
+  // Hooks
+  const { data: bookmark, isLoading: bookmarkLoading } = useMangaBookmark(
+    userId && mangaId ? userId : "",
+    mangaId ?? ""
+  );
 
   const {
     data: mangaChapters,
     isLoading: isMangaChaptersLoading,
     isError: isMangaChaptersError,
-  } = useMangaAllChapters(String(id)) as {
+    refetch,
+  } = useMangaAllChapters(String(currentParams.id)) as {
     data: Chapter[] | undefined;
     isLoading: boolean;
     isError: boolean;
+    refetch: () => Promise<QueryObserverResult<Chapter[] | undefined, Error>>;
   };
-
-  const handleSearch = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    const filteredChapters = mangaChapters?.filter((chapter) =>
-      chapter?.attributes.chapter.includes(search)
-    );
-    setChapters(filteredChapters);
-  };
-
-  useEffect(() => {
-    const storedManga = localStorage.getItem("selectedManga");
-    const selectedManga = storedManga ? JSON.parse(storedManga) : null;
-
-    if (selectedManga) {
-      setCoverUrl(getCover(selectedManga));
-    }
-  }, []);
 
   const {
     data: mangaDetails,
     isLoading: isMangaDetailsLoading,
     isError: isMangaDetailsError,
-  } = useMangaDetails(String(id));
+  } = useMangaDetails(String(currentParams.id));
+
+  // useEffects
+  useEffect(() => {
+    setCurrentParams(currentParams);
+  }, [currentParams]); // Update whenever params change
+
+  useEffect(() => {
+    if (currentParams.id) {
+      console.log("Fetching new manga chapters...");
+      refetch(); // Force re-fetch when ID changes
+    }
+  }, [currentParams.id]);
+
+  useEffect(() => {
+    if (!isMangaDetailsLoading && mangaDetails?.data) {
+      setCoverUrl(getCover(mangaDetails.data));
+    }
+  }, [isMangaDetailsLoading, mangaDetails]);
 
   const attributes = mangaDetails?.data?.attributes;
 
   useEffect(() => {
-    setTimeout(() => {
-      if (mangaChapters) {
-        setChapters(mangaChapters);
-        localStorage.setItem("mangaChapters", JSON.stringify(mangaChapters));
-      }
-    }, 1000);
+    if (mangaChapters) {
+      setChapters(mangaChapters);
+      localStorage.setItem("mangaChapters", JSON.stringify(mangaChapters));
+    }
   }, [mangaChapters]);
 
-  const addBookmark = useAddBookmark({
-    user_id: user?.id,
-    manga_id: String(id),
-    cover_url: String(coverUrl),
-    title: attributes?.title.en,
-    description: attributes?.description.en,
-  });
+  // Methods
+  const addBookmark = useAddBookmark();
 
-  const deleteBookmark = useDeleteBookmark({
-    user_id: user?.id,
-    manga_id: String(id),
-    cover_url: String(coverUrl),
-    title: attributes?.title.en,
-    description: attributes?.description.en,
-  });
+  const deleteBookmark = useDeleteBookmark();
 
   const handleAddBookmark = () => {
-    if (!addBookmark) return; // Prevent calling mutate() if addBookmark is null
-    addBookmark.mutate();
+    if (!user || !currentParams.id || !attributes) return; // Prevent undefined errors
+
+    addBookmark.mutate({
+      user_id: user.id,
+      manga_id: String(currentParams.id),
+      cover_url: String(coverUrl),
+      title: attributes.title.en,
+      description: attributes.description.en,
+    });
   };
 
   const handleDeleteBookmark = () => {
-    if (!deleteBookmark) return; // Prevent calling mutate() if addBookmark is null
-    deleteBookmark.mutate();
+    if (!user || !currentParams.id || !attributes) return;
+
+    deleteBookmark.mutate({
+      user_id: user.id,
+      manga_id: String(currentParams.id),
+      cover_url: String(coverUrl),
+      title: attributes.title.en,
+      description: attributes.description.en,
+    });
   };
 
-  console.log(bookmark, bookmarkLoading, bookmark?.length);
+  const handleSearch = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
+    if (!mangaChapters) return;
+
+    const filteredChapters = mangaChapters?.filter((chapter) =>
+      chapter?.attributes.chapter.includes(search)
+    );
+
+    setChapters(filteredChapters.length ? filteredChapters : []);
+  };
+
+  if (
+    !!!chapters?.length ||
+    bookmarkLoading ||
+    isMangaChaptersLoading ||
+    isMangaDetailsLoading
+  ) {
+    return <p>Loading ...</p>;
+  }
+
   return (
     <>
       {!coverUrl && <p>Loading...</p>}
@@ -140,8 +164,7 @@ const MangaDetails = () => {
                 )}
               </div>
               <CardDescription className="mt-5">
-                {" "}
-                {attributes?.description.en}{" "}
+                {attributes?.description.en}
               </CardDescription>
             </div>
           </CardHeader>
@@ -172,9 +195,12 @@ const MangaDetails = () => {
                 <Link
                   href={
                     "/read/" +
-                    encodeURIComponent(String(manga)).replace(/%20/g, " ") +
+                    encodeURIComponent(String(currentParams.manga)).replace(
+                      /%20/g,
+                      " "
+                    ) +
                     "/" +
-                    id + // Manga ID
+                    currentParams.id + // Manga ID
                     "/" +
                     chapter.id +
                     "/" +

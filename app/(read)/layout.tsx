@@ -1,7 +1,7 @@
 "use client"; // Ensure this is a Client Component
 import QueryProvider from "@/components/QueryProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { Book } from "lucide-react";
+import { Book, Star } from "lucide-react";
 import Link from "next/link";
 
 export default function Layout({
@@ -19,9 +19,14 @@ export default function Layout({
           <h1 className="text-3xl font-semibold">
             Kenneth's Hub | Manga Reader
           </h1>
-          <Link href="/read">
-            <Book />
-          </Link>
+          <div className="flex gap-3">
+            <Link href="/read/bookmark">
+              <Star />
+            </Link>
+            <Link href="/read">
+              <Book />
+            </Link>
+          </div>
         </header>
         <QueryProvider>{children}</QueryProvider>
       </main>

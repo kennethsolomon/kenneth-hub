@@ -81,7 +81,7 @@ export const useMangaChapterDetails = (id: string) => {
 
 export const useMangaAllChapters = (id: string) => {
   return useQuery({
-    queryKey: ["mangaAllChapters"],
+    queryKey: ["mangaAllChapters", id],
     queryFn: () => getAllChapters(id),
   });
 };
@@ -90,7 +90,7 @@ export const useMangaAllChapters = (id: string) => {
 
 export const useMangaBookmarks = (userId: string) => {
   return useQuery({
-    queryKey: ["mangaDexBookmarks"],
+    queryKey: ["mangaDexBookmarks", userId],
     queryFn: () => getBookmarks(userId),
   });
 };
@@ -102,26 +102,26 @@ export const useMangaBookmark = (userId: string, magnaId: string) => {
   });
 };
 
-export const useAddBookmark = (manga: Bookmark) => {
+export const useAddBookmark = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: () => addBookmark(manga),
-    onSuccess: () => {
+    mutationFn: (manga: Bookmark) => addBookmark(manga), // ✅ Accepts data dynamically
+    onSuccess: (_, manga) => {
       queryClient.invalidateQueries({ queryKey: ["mangaDexBookmark"] });
-      toast.success(`${manga.title} has been added to your bookmarks! 🎉`);
+      toast.success(`${manga.title} has been added to your bookmarks! 📚`);
     },
   });
 };
 
-export const useDeleteBookmark = (manga: Bookmark) => {
+export const useDeleteBookmark = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: () => deleteBookmark(manga),
-    onSuccess: () => {
+    mutationFn: (manga: Bookmark) => deleteBookmark(manga),
+    onSuccess: (_, manga) => {
       queryClient.invalidateQueries({ queryKey: ["mangaDexBookmark"] });
-      toast.success(
-        `${manga.title} has been deleted removed to your bookmark list! 🪹`
-      );
+      toast.success(`${manga.title} has been removed from your bookmarks! 🪹`);
     },
   });
 };

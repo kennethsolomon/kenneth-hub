@@ -24,19 +24,7 @@ const MangaList = () => {
 
   const handleSearch = () => {
     queryClient.invalidateQueries({ queryKey: ["mangaList"] }); // Force re-fetch
-
-    console.log("Search:", search);
   };
-
-  const handleSelectedManga = (manga: object) => {
-    localStorage.setItem("selectedManga", JSON.stringify(manga));
-  };
-
-  useEffect(() => {
-    if (localStorage.getItem("selectedManga")) {
-      localStorage.clear();
-    }
-  });
 
   return (
     <>
@@ -69,15 +57,13 @@ const MangaList = () => {
                     "/" +
                     manga?.id
                   }
-                  onClick={() => handleSelectedManga(manga)}
                 >
                   <Card className="bg-gray-800">
                     {/* <Card className="bg-gray-800 flex flex-col items-center mb-3"> */}
                     <CardHeader>
                       <CardTitle> {title} </CardTitle>
                       <CardDescription className="line-clamp-6">
-                        {" "}
-                        {description}{" "}
+                        {description}
                       </CardDescription>
                     </CardHeader>
                     <CardContent>

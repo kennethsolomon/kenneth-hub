@@ -9,7 +9,6 @@ export const getMangaList = async (title?: String) => {
   const response = await api.get(
     `/manga?limit=20&includes[]=cover_art&title=${title}`
   );
-  console.log("Manga List: ", response.data);
   return response.data;
 };
 
@@ -27,7 +26,7 @@ export const getCover = (manga: any) => {
 };
 
 export const getMangaDetails = async (id: string) => {
-  const url = `/manga/${id}`;
+  const url = `/manga/${id}?includes[]=cover_art`;
   const response = await api.get(url);
   return response.data;
 };
@@ -147,7 +146,11 @@ export const getBookmark = async (userId: string, mangaId: string) => {
 
 export const getBookmarks = async (userId: string) => {
   const supabase = await createClient();
-  let { data: bookmarks, error } = await supabase.from("bookmarks").select("*");
+  let { data: bookmarks, error } = await supabase
+    .from("bookmarks")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false }); // ✅ Sort by descending order
 
   if (error) throw new Error("Server Error.");
 
