@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import MangaCover from "./MangaCover";
 
 export default function DownloadForm() {
   const [videoUrl, setVideoUrl] = useState("");
@@ -13,9 +12,8 @@ export default function DownloadForm() {
 
   const downloadMutation = useMutation({
     mutationFn: async (url: string) => {
-      const res = await fetch("/api/download", {
-        method: "POST",
-        body: JSON.stringify({ url }),
+      const res = await fetch(`/api/download?url=${encodeURIComponent(url)}`, {
+        method: "GET",
         headers: { "Content-Type": "application/json" },
       });
       return res.json();
@@ -49,13 +47,20 @@ export default function DownloadForm() {
 
       {downloadUrl && (
         <div className="mt-4 text-center">
-          <MangaCover src={thumbnail} />
+          {thumbnail && (
+            <img
+              src={thumbnail}
+              alt="Video Thumbnail"
+              className="w-48 mx-auto"
+            />
+          )}{" "}
           <h3 className="text-lg font-semibold">{title}</h3>
           <a
             href={downloadUrl}
             className="text-blue-500"
             download
             target="_blank"
+            rel="noopener noreferrer"
           >
             Click here to Download
           </a>

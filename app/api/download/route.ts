@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server";
 
-export async function POST(req: Request) {
+export async function GET(req: Request) {
   try {
-    const { url } = await req.json();
+    const { searchParams } = new URL(req.url);
+    const url = searchParams.get("url");
+
+    if (!url) {
+      return NextResponse.json({ error: "Missing video URL" }, { status: 400 });
+    }
+
     const response = await fetch(
       `http://localhost:8000/download?url=${encodeURIComponent(url)}`
     );
