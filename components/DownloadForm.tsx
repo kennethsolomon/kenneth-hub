@@ -75,27 +75,15 @@ export default function DownloadForm() {
             />
           )}
           <h3 className="text-lg font-semibold">{title}</h3>
-
-          {mode === "redirect" ? (
-            <a
-              href={downloadUrl}
-              className="text-blue-500 font-bold mt-2 block"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              📺 Watch Video
-            </a>
-          ) : (
-            <a
-              href={downloadUrl}
-              className="text-blue-500 font-bold mt-2 block"
-              download
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              📥 Download Now
-            </a>
-          )}
+          <a
+            href={`http://localhost:8000${encodeURI(downloadUrl)}`}
+            className="text-blue-500 font-bold mt-2 block"
+            download
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            📥 Download from Server
+          </a>
         </div>
       )}
     </div>
