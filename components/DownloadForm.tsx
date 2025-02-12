@@ -9,13 +9,17 @@ export default function DownloadForm() {
   const [downloadUrl, setDownloadUrl] = useState("");
   const [title, setTitle] = useState("");
   const [thumbnail, setThumbnail] = useState("");
+  const [mode, setMode] = useState("redirect"); // Default mode
 
   const downloadMutation = useMutation({
-    mutationFn: async (url: string) => {
-      const res = await fetch(`/api/download?url=${encodeURIComponent(url)}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
+    mutationFn: async ({ url, mode }: { url: string; mode: string }) => {
+      const res = await fetch(
+        `/api/download?url=${encodeURIComponent(url)}&mode=${mode}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
       return res.json();
     },
     onSuccess: (data) => {
@@ -23,7 +27,6 @@ export default function DownloadForm() {
         setDownloadUrl(data.video_url);
         setTitle(data.title);
         setThumbnail(data.thumbnail);
-        setVideoUrl("");
       }
     },
   });
@@ -37,13 +40,30 @@ export default function DownloadForm() {
         value={videoUrl}
         onChange={(e) => setVideoUrl(e.target.value)}
       />
-      <Button
-        className="w-full"
-        onClick={() => downloadMutation.mutate(videoUrl)}
-        disabled={downloadMutation.isPending}
-      >
-        {downloadMutation.isPending ? "Fetching..." : "Download Video"}
-      </Button>
+
+      <div className="flex space-x-4">
+        <Button
+          className="w-full"
+          onClick={() => {
+            setMode("redirect");
+            downloadMutation.mutate({ url: videoUrl, mode: "redirect" });
+          }}
+          disabled={downloadMutation.isPending}
+        >
+          {downloadMutation.isPending ? "Fetching..." : "Preview Video"}
+        </Button>
+
+        <Button
+          className="w-full"
+          onClick={() => {
+            setMode("download");
+            downloadMutation.mutate({ url: videoUrl, mode: "download" });
+          }}
+          disabled={downloadMutation.isPending}
+        >
+          {downloadMutation.isPending ? "Fetching..." : "Download Video"}
+        </Button>
+      </div>
 
       {downloadUrl && (
         <div className="mt-4 text-center">
@@ -53,17 +73,29 @@ export default function DownloadForm() {
               alt="Video Thumbnail"
               className="w-48 mx-auto"
             />
-          )}{" "}
+          )}
           <h3 className="text-lg font-semibold">{title}</h3>
-          <a
-            href={downloadUrl}
-            className="text-blue-500"
-            download
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Click here to Download
-          </a>
+
+          {mode === "redirect" ? (
+            <a
+              href={downloadUrl}
+              className="text-blue-500 font-bold mt-2 block"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              📺 Watch Video
+            </a>
+          ) : (
+            <a
+              href={downloadUrl}
+              className="text-blue-500 font-bold mt-2 block"
+              download
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              📥 Download Now
+            </a>
+          )}
         </div>
       )}
     </div>
