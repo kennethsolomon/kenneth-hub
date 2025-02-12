@@ -1,0 +1,6 @@
+# Netscape HTTP Cookie File
+# This file was generated manually for yt-dlp
+
+.tiktok.com    TRUE    /    FALSE    0    s_v_web_id    verify_m5wd2nnu_aeVqZMiD_gzmE_4m5z_9ndb_vmxxxObxxxx
+.tiktok.com    TRUE    /    FALSE    0    sessionid     a077694b181bd0ecdd4f0dc152xxxx
+.tiktok.com    TRUE    /    FALSE    0    tt_csrf_token 2dL5LbML-1cpuvASCi0_Evpxxxx

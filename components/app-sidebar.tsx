@@ -62,10 +62,10 @@ const data = {
           title: "Snippets",
           url: "/snippet",
         },
-        // {
-        //   title: "Explorer",
-        //   url: "#",
-        // },
+        {
+          title: "Downloader",
+          url: "/download",
+        },
         // {
         //   title: "Quantum",
         //   url: "#",

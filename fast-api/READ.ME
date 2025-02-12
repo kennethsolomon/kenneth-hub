@@ -1,0 +1,31 @@
+# 🎥 FastAPI Video Downloader using yt-dlp
+
+This is a simple FastAPI-based video downloader that fetches video URLs, titles, and thumbnails from supported websites like **YouTube, TikTok, Facebook, and Instagram** using `yt-dlp`.
+
+---
+
+## 🚀 Features
+✅ Fetches **video URL**  
+✅ Fetches **video title**  
+✅ Fetches **video thumbnail** (if available)  
+✅ Supports **YouTube, TikTok, Facebook, Instagram**  
+
+---
+
+## 📌 Prerequisites
+- **Python 3.8+** installed  
+- **pip** installed (comes with Python)  
+- pip install fastapi uvicorn yt-dlp
+
+---
+
+## 🔧 Installation Guide
+
+### **1️⃣ Create & Activate a Virtual Environment**
+#### **On macOS/Linux**
+```bash
+python3 -m venv yt-dlp-env
+source yt-dlp-env/bin/activate
+
+## 🚀 Run the server
+uvicorn server:app --host 0.0.0.0 --port 8000
