@@ -76,13 +76,17 @@ export default function DownloadForm() {
           )}
           <h3 className="text-lg font-semibold">{title}</h3>
           <a
-            href={`http://localhost:8000${encodeURI(downloadUrl)}`}
+            href={
+              mode === "redirect"
+                ? downloadUrl
+                : `http://localhost:8000${downloadUrl}`
+            }
             className="text-blue-500 font-bold mt-2 block"
             download
             target="_blank"
             rel="noopener noreferrer"
           >
-            📥 Download from Server
+            📥 Download
           </a>
         </div>
       )}
