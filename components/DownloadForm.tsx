@@ -30,6 +30,13 @@ export default function DownloadForm() {
       }
     },
   });
+  const handleDownload = () => {
+    setTitle("");
+    setThumbnail("");
+    setDownloadUrl("");
+    setVideoUrl("");
+    setMode("redirect");
+  };
 
   return (
     <div className="flex flex-col items-center space-y-4 p-4 max-w-md mx-auto w-full">
@@ -85,6 +92,7 @@ export default function DownloadForm() {
             download
             target="_blank"
             rel="noopener noreferrer"
+            onClick={handleDownload}
           >
             📥 Download
           </a>
