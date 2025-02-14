@@ -66,6 +66,14 @@ const data = {
           title: "Downloader",
           url: "/download",
         },
+        {
+          title: "Pomodoro",
+          url: "/pomodoro",
+        },
+        {
+          title: "URL Shortener",
+          url: "/shorturl",
+        },
         // {
         //   title: "Quantum",
         //   url: "#",
