@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "./lib/supabase/middleware";
 
-const reservedPaths = ['/login', '/read', '/shorturl', '/pomodoro', '/snippet', '/downloader', '/mangadex']
+const reservedPaths = ['/login', '/read', '/shorturl', '/pomodoro', '/snippet', '/download', '/mangadex']
 export async function middleware(request: NextRequest) {
   const url = request.nextUrl;
   const pathname = url.pathname;
