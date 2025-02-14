@@ -169,7 +169,7 @@ const MangaDetails = () => {
     <>
       {!coverUrl && <p>Loading...</p>}
       {coverUrl && (
-        <Card className="bg-gray-800 flex flex-col justify-self-center items-center sm:max-w-[768px]">
+        <Card className="bg-gray-800 flex flex-col justify-self-center items-center">
           <CardHeader>
             <div className="flex flex-col">
               <div className="flex justify-between">

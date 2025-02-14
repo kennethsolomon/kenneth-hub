@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "react-hot-toast";
 import { v4 as uuidv4 } from "uuid";
 
-const BASE_URL = "https://kls.cx/"; // Change this to your domain
+const BASE_URL = "http://localhost:3000/"; // Change this to your domain
 
 export default function URLShortener(): JSX.Element {
   const [originalUrl, setOriginalUrl] = useState("");

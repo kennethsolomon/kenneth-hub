@@ -11,7 +11,7 @@ const MangaChapter: React.FC<MangaChapterProps> = ({ src, ...props }) => {
       <Image
         src={src}
         alt="Manga Cover"
-        width={400}
+        width={768}
         height={200}
         priority
       />

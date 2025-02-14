@@ -81,7 +81,7 @@ function MangaDetails() {
     );
 
   return (
-    <div className="max-w-[410px] justify-self-center">
+    <div className="w-full justify-self-center">
       {isMangaChapterLoading && <p>Loading...</p>}
       <Link
         href={
