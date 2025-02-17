@@ -24,7 +24,7 @@ export async function middleware(request: NextRequest) {
     return await updateSession(request);
   }
 
-  return NextResponse.rewrite(new URL(`/api/shorturl`, request.url));
+  return NextResponse.rewrite(new URL(`/api/redirectShortUrl`, request.url));
 }
 
 export const config = {

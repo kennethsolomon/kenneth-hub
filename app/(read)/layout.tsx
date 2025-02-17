@@ -1,5 +1,4 @@
 "use client"; // Ensure this is a Client Component
-import QueryProvider from "@/components/QueryProvider";
 import { Book, Star } from "lucide-react";
 import Link from "next/link";
 
@@ -23,7 +22,7 @@ export default function Layout({
           </Link>
         </div>
       </header>
-      <QueryProvider>{children}</QueryProvider>
+      {children}
     </main>
   );
 }

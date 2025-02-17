@@ -1,29 +1,25 @@
 "use client";
+
 import { JSX, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "react-hot-toast";
-import { v4 as uuidv4 } from "uuid";
-
-const BASE_URL = "http://localhost:3000/"; // Change this to your domain
+import { useDeleteShortUrl, useShortenUrl, useUserShortUrls } from "@/hooks/useShortenUrl";
+import { Trash } from "lucide-react";
 
 export default function URLShortener(): JSX.Element {
-  const [originalUrl, setOriginalUrl] = useState("");
-  const [shortenedUrl, setShortenedUrl] = useState("");
-  const [urlMap, setUrlMap] = useState<Record<string, string>>({});
+  const [originalUrl, setOriginalUrl] = useState<string>("");
+  const mutation = useShortenUrl();
+  const { data: shortUrls, isLoading } = useUserShortUrls();
+  const deleteMutation = useDeleteShortUrl();
 
-  const handleShorten = () => {
+  const handleShorten = (): void => {
     if (!originalUrl) {
       toast.error("Please enter a valid URL");
       return;
     }
-
-    const shortCode = uuidv4().slice(0, 6); // Generate a short unique ID
-    const shortUrl = `${BASE_URL}${shortCode}`;
-
-    setUrlMap((prev) => ({ ...prev, [shortCode]: originalUrl }));
-    setShortenedUrl(shortUrl);
-    toast.success("URL Shortened Successfully!");
+    mutation.mutate(originalUrl);
+    setOriginalUrl("");
   };
 
   return (
@@ -36,22 +32,55 @@ export default function URLShortener(): JSX.Element {
         onChange={(e) => setOriginalUrl(e.target.value)}
         className="mb-4 w-full"
       />
-      <Button onClick={handleShorten} className="mb-4 w-full">
-        Shorten URL
+      <Button onClick={handleShorten} className="mb-4 w-full" disabled={mutation.isPending}>
+        {mutation.isPending ? "Shortening..." : "Shorten URL"}
       </Button>
-      {shortenedUrl && (
+      {mutation.data && (
         <div className="mt-4">
           <p className="text-sm">Shortened URL:</p>
           <a
-            href={shortenedUrl}
+            href={mutation.data.shortUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-400 underline"
           >
-            {shortenedUrl}
+            {mutation.data.shortUrl}
           </a>
         </div>
       )}
+      <div className="mt-6 w-full">
+        <h3 className="text-lg font-semibold mb-2">Your Saved URLs</h3>
+        {isLoading ? (
+          <p>Loading...</p>
+        ) : (
+          Array.isArray(shortUrls) ? (
+            <ul className="text-sm">
+              {shortUrls.map((url, index) => (
+                <li key={index} className="mb-2 flex justify-between items-center">
+                  <div>
+                    <a href={url.shorten_url} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">
+                      {url.shorten_url}
+                    </a>
+                    <p className="text-gray-400">ID: {url.id}</p>
+                    <p className="text-gray-400">Original:{url.original_url}</p>
+                  </div>
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    className="ml-2"
+                    onClick={() => deleteMutation.mutate(url.id)}
+                    disabled={deleteMutation.isPending}
+                  >
+                    <Trash className="w-4 h-4" />
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No URLs found.</p>
+          )
+        )}
+      </div>
     </div>
   );
 }
